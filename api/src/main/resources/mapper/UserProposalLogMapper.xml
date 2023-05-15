@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hilamg.api.mapper.UserProposalLogMapper">
+
+    <!--根据投票id获取总票数-->
+    <select id="getSumAmountById" resultType="decimal">
+        SELECT ifnull(SUM(A.`amount`), 0)
+        FROM user_proposal_log A
+        WHERE A.`options_id` = #{id}
+          and A.`is_delete` = 0
+    </select>
+
+    <!--获取投票流水-->
+    <select id="getLogs" resultType="com.hilamg.api.dto.out.ProposalLogList">
+        SELECT A.`amount` amount,
+               B.`address`,
+               B.`id`     userId,
+               A.status
+        FROM user_proposal_log A
+                 LEFT JOIN user_address B
+                           ON A.`user_id` = B.`id`
+        WHERE A.`proposal_id` = #{id}
+          AND A.`is_delete` = 0
+        ORDER BY A.`user_id` &lt;> #{userId},
+                 A.`id` DESC
+    </select>
+
+    <!--获取用户提案待赎回金额-->
+    <select id="getMoney" resultType="decimal">
+        SELECT IFNULL(SUM(A.`amount`), 0)
+        FROM user_proposal_log A
+        WHERE A.`proposal_id` = #{proposalId}
+          AND A.`status` = 2
+          AND A.`user_id` = #{userId}
+          AND A.`is_delete` = 0
+    </select>
+
+</mapper>

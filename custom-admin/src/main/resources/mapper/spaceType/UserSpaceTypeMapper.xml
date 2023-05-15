@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.utg.mapper.UserSpaceTypeMapper">
+    
+    <resultMap type="UserSpaceType" id="UserSpaceTypeResult">
+        <result property="id"    column="id"    />
+        <result property="spaceName"    column="space_name"    />
+        <result property="spaceNameEn"    column="space_name_en"    />
+        <result property="spaceNameJp"    column="space_name_jp"    />
+        <result property="spaceNameKo"    column="space_name_ko"    />
+        <result property="createDate"    column="create_date"    />
+        <result property="updateDate"    column="update_date"    />
+        <result property="isDelete"    column="is_delete"    />
+        <result property="remarks"    column="remarks"    />
+    </resultMap>
+
+    <sql id="selectUserSpaceTypeVo">
+        select id, space_name, space_name_en, space_name_jp, space_name_ko, create_date, update_date, is_delete, remarks from user_space_type
+    </sql>
+
+    <select id="selectUserSpaceTypeList" parameterType="UserSpaceType" resultMap="UserSpaceTypeResult">
+        <include refid="selectUserSpaceTypeVo"/>
+        <where>
+             is_delete=0
+            <if test="spaceName != null  and spaceName != ''"> and space_name like concat('%', #{spaceName}, '%')</if>
+            <if test="spaceNameEn != null  and spaceNameEn != ''"> and space_name_en = #{spaceNameEn}</if>
+            <if test="spaceNameJp != null  and spaceNameJp != ''"> and space_name_jp = #{spaceNameJp}</if>
+            <if test="spaceNameKo != null  and spaceNameKo != ''"> and space_name_ko = #{spaceNameKo}</if>
+            <if test="remarks != null  and remarks != ''"> and remarks = #{remarks}</if>
+        </where>
+    </select>
+    
+    <select id="selectUserSpaceTypeById" parameterType="Long" resultMap="UserSpaceTypeResult">
+        <include refid="selectUserSpaceTypeVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertUserSpaceType" parameterType="UserSpaceType" useGeneratedKeys="true" keyProperty="id">
+        insert into user_space_type
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="spaceName != null">space_name,</if>
+            <if test="spaceNameEn != null">space_name_en,</if>
+            <if test="spaceNameJp != null">space_name_jp,</if>
+            <if test="spaceNameKo != null">space_name_ko,</if>
+            <if test="createDate != null">create_date,</if>
+            <if test="updateDate != null">update_date,</if>
+            <if test="isDelete != null">is_delete,</if>
+            <if test="remarks != null">remarks,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="spaceName != null">#{spaceName},</if>
+            <if test="spaceNameEn != null">#{spaceNameEn},</if>
+            <if test="spaceNameJp != null">#{spaceNameJp},</if>
+            <if test="spaceNameKo != null">#{spaceNameKo},</if>
+            <if test="createDate != null">#{createDate},</if>
+            <if test="updateDate != null">#{updateDate},</if>
+            <if test="isDelete != null">#{isDelete},</if>
+            <if test="remarks != null">#{remarks},</if>
+         </trim>
+    </insert>
+
+    <update id="updateUserSpaceType" parameterType="UserSpaceType">
+        update user_space_type
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="spaceName != null">space_name = #{spaceName},</if>
+            <if test="spaceNameEn != null">space_name_en = #{spaceNameEn},</if>
+            <if test="spaceNameJp != null">space_name_jp = #{spaceNameJp},</if>
+            <if test="spaceNameKo != null">space_name_ko = #{spaceNameKo},</if>
+            <if test="createDate != null">create_date = #{createDate},</if>
+            <if test="updateDate != null">update_date = #{updateDate},</if>
+            <if test="isDelete != null">is_delete = #{isDelete},</if>
+            <if test="remarks != null">remarks = #{remarks},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <update id="deleteUserSpaceTypeById" parameterType="Long">
+        update user_space_type set is_delete=1 where id = #{id}
+    </update>
+
+    <delete id="deleteUserSpaceTypeByIds" parameterType="String">
+        update user_space_type set is_delete=1 where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+</mapper>

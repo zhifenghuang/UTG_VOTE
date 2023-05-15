@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hilamg.api.mapper.UserSpaceTypeMapper">
+
+    <!--获取空间类型列表-->
+    <select id="getList" resultType="com.hilamg.api.entity.UserSpaceType">
+        SELECT
+            A.`id`,
+            <if test="language=='en_US'">
+                A.space_name_en spaceName
+            </if>
+            <if test="language=='zh_CN'">
+                A.space_name spaceName
+            </if>
+            <if test="language=='jp'">
+                A.space_name_jp spaceName
+            </if>
+            <if test="language=='Korean'">
+                A.space_name_ko spaceName
+            </if>
+        FROM
+            user_space_type A
+        WHERE A.`is_delete` = 0
+    </select>
+
+</mapper>

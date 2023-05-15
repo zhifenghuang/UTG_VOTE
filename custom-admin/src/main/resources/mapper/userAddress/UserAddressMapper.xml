@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.utg.mapper.UserAddressMapper">
+    
+    <resultMap type="UserAddress" id="UserAddressResult">
+        <result property="id"    column="id"    />
+        <result property="address"    column="address"    />
+        <result property="nikeName"    column="nike_name"    />
+        <result property="userInfo"    column="user_info"    />
+        <result property="createDate"    column="create_date"    />
+        <result property="updateDate"    column="update_date"    />
+        <result property="isDelete"    column="is_delete"    />
+        <result property="remarks"    column="remarks"    />
+    </resultMap>
+
+    <sql id="selectUserAddressVo">
+        select id, address, nike_name, user_info, create_date, update_date, is_delete, remarks from user_address
+    </sql>
+
+    <select id="selectUserAddressList" parameterType="UserAddress" resultMap="UserAddressResult">
+        <include refid="selectUserAddressVo"/>
+        <where>
+            is_delete=0
+            <if test="address != null  and address != ''"> and address = #{address}</if>
+            <if test="nikeName != null  and nikeName != ''"> and nike_name like concat('%', #{nikeName}, '%')</if>
+            <if test="params.beginCreateDate != null and params.beginCreateDate != '' and params.endCreateDate != null and params.endCreateDate != ''"> and create_date between #{params.beginCreateDate} and #{params.endCreateDate}</if>
+            <if test="remarks != null  and remarks != ''"> and remarks = #{remarks}</if>
+        </where>
+    </select>
+    
+    <select id="selectUserAddressById" parameterType="Long" resultMap="UserAddressResult">
+        <include refid="selectUserAddressVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertUserAddress" parameterType="UserAddress" useGeneratedKeys="true" keyProperty="id">
+        insert into user_address
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="address != null and address != ''">address,</if>
+            <if test="nikeName != null and nikeName != ''">nike_name,</if>
+            <if test="userInfo != null and userInfo != ''">user_info,</if>
+            <if test="createDate != null">create_date,</if>
+            <if test="updateDate != null">update_date,</if>
+            <if test="isDelete != null">is_delete,</if>
+            <if test="remarks != null">remarks,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="address != null and address != ''">#{address},</if>
+            <if test="nikeName != null and nikeName != ''">#{nikeName},</if>
+            <if test="userInfo != null and userInfo != ''">#{userInfo},</if>
+            <if test="createDate != null">#{createDate},</if>
+            <if test="updateDate != null">#{updateDate},</if>
+            <if test="isDelete != null">#{isDelete},</if>
+            <if test="remarks != null">#{remarks},</if>
+         </trim>
+    </insert>
+
+    <update id="updateUserAddress" parameterType="UserAddress">
+        update user_address
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="address != null and address != ''">address = #{address},</if>
+            <if test="nikeName != null and nikeName != ''">nike_name = #{nikeName},</if>
+            <if test="userInfo != null and userInfo != ''">user_info = #{userInfo},</if>
+            <if test="createDate != null">create_date = #{createDate},</if>
+            <if test="updateDate != null">update_date = #{updateDate},</if>
+            <if test="isDelete != null">is_delete = #{isDelete},</if>
+            <if test="remarks != null">remarks = #{remarks},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteUserAddressById" parameterType="Long">
+        update user_address set is_delete=1 where id = #{id}
+    </delete>
+
+    <delete id="deleteUserAddressByIds" parameterType="String">
+        update user_address set is_delete=1 where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+</mapper>

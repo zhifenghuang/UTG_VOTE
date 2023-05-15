@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('用户空间列表')"/>
+</head>
+<body class="gray-bg">
+<div class="container-div">
+    <div class="row">
+        <div class="col-sm-12 search-collapse">
+            <form id="formId">
+                <div class="select-list">
+                    <ul>
+                        <li>
+                            <label>创建者：</label>
+                            <input type="text" name="ownerAddress"/>
+                        </li>
+                        <li>
+                            <label>空间类型：</label>
+                            <select name="spaceType" th:with="type=${@dict.getUserSpaceTypeList()}">
+                                <option value="">所有</option>
+                                <option th:each="dict : ${type}" th:text="${dict.dictLabel}"
+                                        th:value="${dict.dictValue}"></option>
+                            </select>
+                        </li>
+                        <li>
+                            <label>空间名称：</label>
+                            <input type="text" name="name"/>
+                        </li>
+                        <li>
+                            <label>符号：</label>
+                            <input type="text" name="symbol"/>
+                        </li>
+                        <li>
+                            <label>合约地址：</label>
+                            <input type="text" name="contractAddress"/>
+                        </li>
+                        <li>
+                            <label>审核状态：</label>
+                            <select name="status" th:with="type=${@dict.getType('space_status')}">
+                                <option value="">所有</option>
+                                <option th:each="dict : ${type}" th:text="${dict.dictLabel}"
+                                        th:value="${dict.dictValue}"></option>
+                            </select>
+                        </li>
+                        <li class="select-time">
+                            <label>创建时间：</label>
+                            <input type="text" class="time-input" id="startTime" placeholder="开始时间"
+                                   name="params[beginCreateDate]"/>
+                            <span>-</span>
+                            <input type="text" class="time-input" id="endTime" placeholder="结束时间"
+                                   name="params[endCreateDate]"/>
+                        </li>
+                        <li>
+                            <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i
+                                    class="fa fa-search"></i>&nbsp;搜索</a>
+                            <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i
+                                    class="fa fa-refresh"></i>&nbsp;重置</a>
+                        </li>
+                    </ul>
+                </div>
+            </form>
+        </div>
+
+        <div class="btn-group-sm" id="toolbar" role="group">
+            <!--                <a class="btn btn-success" onclick="$.operate.add()" shiro:hasPermission="userSpace:space:add">-->
+            <!--                    <i class="fa fa-plus"></i> 添加-->
+            <!--                </a>-->
+            <a class="btn btn-primary single disabled" onclick="$.operate.edit()" shiro:hasPermission="userSpace:space:edit">
+                <i class="fa fa-edit"></i> 修改
+            </a>
+            <a class="btn btn-danger multiple disabled" onclick="$.operate.removeAll()"
+               shiro:hasPermission="userSpace:space:remove">
+                <i class="fa fa-remove"></i> 删除
+            </a>
+            <a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="userSpace:space:export">
+                <i class="fa fa-download"></i> 导出
+            </a>
+        </div>
+        <div class="col-sm-12 select-table table-striped">
+            <table id="bootstrap-table"></table>
+        </div>
+    </div>
+</div>
+<th:block th:include="include :: footer"/>
+<script th:inline="javascript">
+    var editFlag = [[${@permission.hasPermi('userSpace:space:edit')}]];
+    var removeFlag = [[${@permission.hasPermi('userSpace:space:remove')}]];
+    var spaceTypeDatas = [[${@dict.getUserSpaceTypeList()}]];
+    var statusDatas = [[${@dict.getType('space_status')}]];
+    var prefix = ctx + "userSpace/space";
+
+    $(function () {
+        var options = {
+            url: prefix + "/list",
+            createUrl: prefix + "/add",
+            updateUrl: prefix + "/edit/{id}",
+            removeUrl: prefix + "/remove",
+            exportUrl: prefix + "/export",
+            modalName: "用户空间",
+            sortName: "id",
+            sortOrder: "desc",
+            columns: [{
+                checkbox: true
+            },
+                {
+                    field: 'id',
+                    title: 'ID',
+                    visible: false
+                },
+                {
+                    field: 'logo',
+                    title: '空间图片',
+                    formatter: function (value, row, index) {
+                        return $.table.imageView(value);
+                    }
+                },
+                {
+                    field: 'status',
+                    title: '审核状态',
+                    formatter: function (value, row, index) {
+                        return $.table.selectDictLabel(statusDatas, value);
+                    }
+                },
+                {
+                    field: 'ownerAddress',
+                    title: '空间创建者'
+                },
+                {
+                    field: 'spaceType',
+                    title: '空间类型',
+                    formatter: function (value, row, index) {
+                        return $.table.selectDictLabel(spaceTypeDatas, value);
+                    }
+                },
+                {
+                    field: 'name',
+                    title: '空间名称'
+                },
+                {
+                    field: 'symbol',
+                    title: '符号'
+                },
+                {
+                    field: 'contractAddress',
+                    title: '合约地址'
+                },
+                {
+                    field: 'tokenAmount',
+                    title: '发起提案需要消耗的代币数量'
+                },
+                {
+                    field: 'twitterUrl',
+                    title: '推特'
+                },
+                {
+                    field: 'telegramUrl',
+                    title: '电报'
+                },
+                {
+                    field: 'discordUrl',
+                    title: 'discord'
+                },
+                {
+                    field: 'githubUrl',
+                    title: 'github'
+                },
+                {
+                    field: 'gitbookUrl',
+                    title: 'gitbook'
+                },
+                {
+                    field: 'webUrl',
+                    title: '官网链接'
+                },
+                {
+                    field: 'createDate',
+                    title: '创建时间'
+                },
+                {
+                    field: 'updateDate',
+                    title: '修改时间'
+                },
+                {
+                    field: 'remarks',
+                    title: '备注'
+                },
+                {
+                    title: '操作',
+                    align: 'center',
+                    formatter: function (value, row, index) {
+                        var actions = [];
+                        if (row.status == 1) {
+                            actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="shenhe(\'' + row.id + '\',\'' + 2 + '\')"><i class="fa fa-edit"></i>审核通过</a>');
+                            actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="shenhe(\'' + row.id + '\',\'' + 3 + '\')"><i class="fa fa-remove"></i>审核拒绝</a>');
+                        }
+                        actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="$.operate.remove(\'' + row.id + '\')"><i class="fa fa-remove"></i>删除</a>');
+                        return actions.join('');
+                    }
+                }]
+        };
+        $.table.init(options);
+    });
+    function shenhe(id, status) {
+        var title = "确认要审核通过吗？";
+        if (3 == status) {
+            title = "确认要拒绝该申请吗？";
+        }
+        $.modal.confirm(title, function () {
+            $.operate.post(prefix + "/edit", {"id": id, "status": status});
+        })
+    }
+</script>
+</body>
+</html>

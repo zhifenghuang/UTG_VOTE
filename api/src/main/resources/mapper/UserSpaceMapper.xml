@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hilamg.api.mapper.UserSpaceMapper">
+
+    <!--获取空间列表-->
+    <select id="getSpaceList" resultType="com.hilamg.api.dto.out.SpaceList">
+        SELECT
+            A.`id`,
+            A.`logo`,
+            A.`name`
+        FROM
+            user_space A
+        WHERE A.`status` = 2
+          AND A.`is_delete` = 0
+          <if test="type!='' and type!=null">
+              AND A.space_type=#{type}
+          </if>
+        <if test="name!='' and name!=null">
+            AND A.name like concat('%', #{name}, '%')
+        </if>
+    </select>
+
+</mapper>

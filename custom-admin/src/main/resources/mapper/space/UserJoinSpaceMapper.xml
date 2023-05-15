@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.utg.mapper.UserJoinSpaceMapper">
+    
+    <resultMap type="UserJoinSpace" id="UserJoinSpaceResult">
+        <result property="id"    column="id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="space"    column="space"    />
+        <result property="isOwer"    column="is_ower"    />
+        <result property="createDate"    column="create_date"    />
+        <result property="updateDate"    column="update_date"    />
+        <result property="isDelete"    column="is_delete"    />
+        <result property="remarks"    column="remarks"    />
+    </resultMap>
+
+    <sql id="selectUserJoinSpaceVo">
+        SELECT
+            A.id,
+            A.user_id,
+            A.`space`,
+            A.is_ower,
+            A.create_date,
+            A.update_date,
+            A.is_delete,
+            A.remarks,
+            B.`address` userAddress,
+            C.`name` spaceName
+        FROM
+            user_join_space A
+                LEFT JOIN user_address B
+                          ON A.`user_id`=B.`id`
+                LEFT JOIN user_space C
+                          ON A.`space`=C.`id`
+    </sql>
+
+    <select id="selectUserJoinSpaceList" parameterType="UserJoinSpace" resultMap="UserJoinSpaceResult">
+        <include refid="selectUserJoinSpaceVo"/>
+        <where>  
+            <if test="userAddress != null and userAddress != ''"> and B.address like concat('%', #{userAddress}, '%')</if>
+            <if test="spaceName != null and spaceName!=''"> and C.name like concat('%', #{spaceName}, '%')</if>
+            <if test="isOwer != null  and isOwer != ''"> and A.is_ower = #{isOwer}</if>
+            <if test="params.beginCreateDate != null and params.beginCreateDate != '' and params.endCreateDate != null and params.endCreateDate != ''"> and A.create_date between #{params.beginCreateDate} and #{params.endCreateDate}</if>
+            <if test="remarks != null  and remarks != ''"> and A.remarks = #{remarks}</if>
+        </where>
+    </select>
+    
+    <select id="selectUserJoinSpaceById" parameterType="Long" resultMap="UserJoinSpaceResult">
+        <include refid="selectUserJoinSpaceVo"/>
+        where A.id = #{id}
+    </select>
+        
+    <insert id="insertUserJoinSpace" parameterType="UserJoinSpace" useGeneratedKeys="true" keyProperty="id">
+        insert into user_join_space
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">user_id,</if>
+            <if test="space != null">space,</if>
+            <if test="isOwer != null">is_ower,</if>
+            <if test="createDate != null">create_date,</if>
+            <if test="updateDate != null">update_date,</if>
+            <if test="isDelete != null">is_delete,</if>
+            <if test="remarks != null">remarks,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">#{userId},</if>
+            <if test="space != null">#{space},</if>
+            <if test="isOwer != null">#{isOwer},</if>
+            <if test="createDate != null">#{createDate},</if>
+            <if test="updateDate != null">#{updateDate},</if>
+            <if test="isDelete != null">#{isDelete},</if>
+            <if test="remarks != null">#{remarks},</if>
+         </trim>
+    </insert>
+
+    <update id="updateUserJoinSpace" parameterType="UserJoinSpace">
+        update user_join_space
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="space != null">space = #{space},</if>
+            <if test="isOwer != null">is_ower = #{isOwer},</if>
+            <if test="createDate != null">create_date = #{createDate},</if>
+            <if test="updateDate != null">update_date = #{updateDate},</if>
+            <if test="isDelete != null">is_delete = #{isDelete},</if>
+            <if test="remarks != null">remarks = #{remarks},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteUserJoinSpaceById" parameterType="Long">
+        delete from user_join_space where id = #{id}
+    </delete>
+
+    <delete id="deleteUserJoinSpaceByIds" parameterType="String">
+        delete from user_join_space where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+</mapper>

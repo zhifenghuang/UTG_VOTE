@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.utg.mapper.UserProposalLogMapper">
+    
+    <resultMap type="UserProposalLog" id="UserProposalLogResult">
+        <result property="id"    column="id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="spaceId"    column="space_id"    />
+        <result property="proposalId"    column="proposal_id"    />
+        <result property="optionsId"    column="options_id"    />
+        <result property="amount"    column="amount"    />
+        <result property="status"    column="status"    />
+        <result property="createDate"    column="create_date"    />
+        <result property="updateDate"    column="update_date"    />
+        <result property="isDelete"    column="is_delete"    />
+        <result property="remarks"    column="remarks"    />
+    </resultMap>
+
+    <sql id="selectUserProposalLogVo">
+        SELECT
+            A.id,
+            A.user_id,
+            A.space_id,
+            A.proposal_id,
+            A.options_id,
+            A.amount,
+            A.status,
+            A.create_date,
+            A.update_date,
+            A.is_delete,
+            A.remarks,
+            B.`address` userAddress,
+            C.`name` spaceName,
+            D.`title` title,
+            E.`options` optionsName
+        FROM
+            user_proposal_log A
+                LEFT JOIN user_address B
+                          ON A.`user_id`=B.`id`
+                LEFT JOIN user_space C
+                          ON A.`space_id`=C.`id`
+                LEFT JOIN user_proposal D
+                          ON A.`proposal_id`=D.`id`
+                LEFT JOIN user_proposal_options E
+                          ON A.`options_id`=E.`id`
+    </sql>
+
+    <select id="selectUserProposalLogList" parameterType="UserProposalLog" resultMap="UserProposalLogResult">
+        <include refid="selectUserProposalLogVo"/>
+        <where>  
+            <if test="userAddress != null and userAddress!=''"> and B.`address` like concat('%', #{userAddress}, '%')</if>
+            <if test="spaceName != null and spaceName!=''"> and C.`name` like concat('%', #{spaceName}, '%')</if>
+            <if test="title != null and title!=''"> and D.`title` like concat('%', #{title}, '%')</if>
+            <if test="optionsName != null and optionsName!=''"> and E.`options` like concat('%', #{optionsName}, '%')</if>
+            <if test="status != null  and status != ''"> and A.status = #{status}</if>
+            <if test="params.beginCreateDate != null and params.beginCreateDate != '' and params.endCreateDate != null and params.endCreateDate != ''"> and A.create_date between #{params.beginCreateDate} and #{params.endCreateDate}</if>
+        </where>
+    </select>
+    
+    <select id="selectUserProposalLogById" parameterType="Long" resultMap="UserProposalLogResult">
+        <include refid="selectUserProposalLogVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertUserProposalLog" parameterType="UserProposalLog" useGeneratedKeys="true" keyProperty="id">
+        insert into user_proposal_log
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">user_id,</if>
+            <if test="spaceId != null">space_id,</if>
+            <if test="proposalId != null">proposal_id,</if>
+            <if test="optionsId != null">options_id,</if>
+            <if test="amount != null">amount,</if>
+            <if test="status != null">status,</if>
+            <if test="createDate != null">create_date,</if>
+            <if test="updateDate != null">update_date,</if>
+            <if test="isDelete != null">is_delete,</if>
+            <if test="remarks != null">remarks,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">#{userId},</if>
+            <if test="spaceId != null">#{spaceId},</if>
+            <if test="proposalId != null">#{proposalId},</if>
+            <if test="optionsId != null">#{optionsId},</if>
+            <if test="amount != null">#{amount},</if>
+            <if test="status != null">#{status},</if>
+            <if test="createDate != null">#{createDate},</if>
+            <if test="updateDate != null">#{updateDate},</if>
+            <if test="isDelete != null">#{isDelete},</if>
+            <if test="remarks != null">#{remarks},</if>
+         </trim>
+    </insert>
+
+    <update id="updateUserProposalLog" parameterType="UserProposalLog">
+        update user_proposal_log
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="spaceId != null">space_id = #{spaceId},</if>
+            <if test="proposalId != null">proposal_id = #{proposalId},</if>
+            <if test="optionsId != null">options_id = #{optionsId},</if>
+            <if test="amount != null">amount = #{amount},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="createDate != null">create_date = #{createDate},</if>
+            <if test="updateDate != null">update_date = #{updateDate},</if>
+            <if test="isDelete != null">is_delete = #{isDelete},</if>
+            <if test="remarks != null">remarks = #{remarks},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteUserProposalLogById" parameterType="Long">
+        delete from user_proposal_log where id = #{id}
+    </delete>
+
+    <delete id="deleteUserProposalLogByIds" parameterType="String">
+        delete from user_proposal_log where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+</mapper>

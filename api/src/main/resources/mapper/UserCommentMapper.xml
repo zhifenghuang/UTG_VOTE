@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hilamg.api.mapper.UserProposalMapper">
+
+    <!--获取用户评论列表-->
+    <select id="getUserCommentList" resultType="com.hilamg.api.dto.out.UserCommentList">
+        SELECT
+        A.`id`,
+        A.`proposal_id` proposalId,
+        A.`comment_user_id` commentUserId,
+        A.`content`,
+        A.`replay_id` replayId,
+        A.`replay_sub_id` replaySubId,
+        A.`replay_sub_user_id` replaySubUserId,
+        A.`discuss`,
+        A.`create_date` createDate,
+        FROM
+        user_comment A
+        WHERE A.`proposal_id` = #{proposalId}
+        ORDER BY A.`create_date`
+    </select>
+</mapper>

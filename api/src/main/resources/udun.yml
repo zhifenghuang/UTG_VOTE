@@ -1,0 +1,5 @@
+udun:
+  gateway: https://hk01-node.uduncloud.com
+  merchant-id: 304991
+  merchant-key: e48d6e63f0a3da2e0713f0acb0d1b3df
+  call-url: http://hehuanhuan.natapp1.cc/open/notify

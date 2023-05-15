@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.proposal.mapper.UserProposalMapper">
+    
+    <resultMap type="UserProposal" id="UserProposalResult">
+        <result property="id"    column="id"    />
+        <result property="spaceId"    column="space_id"    />
+        <result property="proposalUser"    column="proposal_user"    />
+        <result property="title"    column="title"    />
+        <result property="describeValue"    column="describe_value"    />
+        <result property="discuss"    column="discuss"    />
+        <result property="kind"    column="kind"    />
+        <result property="tokenAmount"    column="token_amount"    />
+        <result property="startTime"    column="start_time"    />
+        <result property="endTime"    column="end_time"    />
+        <result property="status"    column="status"    />
+        <result property="isOneLine"    column="is_one_line"    />
+        <result property="createDate"    column="create_date"    />
+        <result property="updateDate"    column="update_date"    />
+        <result property="isDelete"    column="is_delete"    />
+        <result property="remarks"    column="remarks"    />
+    </resultMap>
+
+    <sql id="selectUserProposalVo">
+        SELECT
+            A.id,
+            A.space_id,
+            A.proposal_user,
+            A.title,
+            A.describe_value,
+            A.discuss,
+            A.kind,
+            A.token_amount,
+            A.start_time,
+            A.end_time,
+            A.status,
+            A.is_one_line,
+            A.create_date,
+            A.update_date,
+            A.is_delete,
+            A.remarks,
+            B.`name` spaceName,
+            C.`address` proposalUserAddress,
+            A.bili
+        FROM
+            user_proposal A
+                LEFT JOIN user_space B
+                          ON A.`space_id`=B.`id`
+                LEFT JOIN user_address C
+                          ON A.`proposal_user`=C.`id`
+    </sql>
+
+    <select id="selectUserProposalList" parameterType="UserProposal" resultMap="UserProposalResult">
+        <include refid="selectUserProposalVo"/>
+        <where>  
+            <if test="spaceName != null and spaceName!=''"> and B.`name` like concat('%', #{spaceName}, '%')</if>
+            <if test="proposalUserAddress != null and proposalUserAddress!=''"> and C.`address` like concat('%', #{proposalUserAddress}, '%')</if>
+            <if test="title != null  and title != ''"> and A.title like concat('%', #{title}, '%')</if>
+            <if test="kind != null  and kind != ''"> and A.kind = #{kind}</if>
+            <if test="params.beginStartTime != null and params.beginStartTime != '' and params.endStartTime != null and params.endStartTime != ''"> and A.start_time between #{params.beginStartTime} and #{params.endStartTime}</if>
+            <if test="params.beginEndTime != null and params.beginEndTime != '' and params.endEndTime != null and params.endEndTime != ''"> and A.end_time between #{params.beginEndTime} and #{params.endEndTime}</if>
+            <if test="status != null  and status != ''"> and A.status = #{status}</if>
+            <if test="isOneLine != null  and isOneLine != ''"> and A.is_one_line = #{isOneLine}</if>
+            <if test="params.beginCreateDate != null and params.beginCreateDate != '' and params.endCreateDate != null and params.endCreateDate != ''"> and A.create_date between #{params.beginCreateDate} and #{params.endCreateDate}</if>
+        </where>
+    </select>
+    
+    <select id="selectUserProposalById" parameterType="Long" resultMap="UserProposalResult">
+        <include refid="selectUserProposalVo"/>
+        where A.id = #{id}
+    </select>
+        
+    <insert id="insertUserProposal" parameterType="UserProposal" useGeneratedKeys="true" keyProperty="id">
+        insert into user_proposal
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="spaceId != null">space_id,</if>
+            <if test="proposalUser != null">proposal_user,</if>
+            <if test="title != null">title,</if>
+            <if test="describeValue != null">describe_value,</if>
+            <if test="discuss != null">discuss,</if>
+            <if test="kind != null">kind,</if>
+            <if test="tokenAmount != null">token_amount,</if>
+            <if test="startTime != null">start_time,</if>
+            <if test="endTime != null">end_time,</if>
+            <if test="status != null">status,</if>
+            <if test="isOneLine != null">is_one_line,</if>
+            <if test="createDate != null">create_date,</if>
+            <if test="updateDate != null">update_date,</if>
+            <if test="isDelete != null">is_delete,</if>
+            <if test="remarks != null">remarks,</if>
+            <if test="bili != null">bili,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="spaceId != null">#{spaceId},</if>
+            <if test="proposalUser != null">#{proposalUser},</if>
+            <if test="title != null">#{title},</if>
+            <if test="describeValue != null">#{describeValue},</if>
+            <if test="discuss != null">#{discuss},</if>
+            <if test="kind != null">#{kind},</if>
+            <if test="tokenAmount != null">#{tokenAmount},</if>
+            <if test="startTime != null">#{startTime},</if>
+            <if test="endTime != null">#{endTime},</if>
+            <if test="status != null">#{status},</if>
+            <if test="isOneLine != null">#{isOneLine},</if>
+            <if test="createDate != null">#{createDate},</if>
+            <if test="updateDate != null">#{updateDate},</if>
+            <if test="isDelete != null">#{isDelete},</if>
+            <if test="remarks != null">#{remarks},</if>
+            <if test="bili != null">#{bili},</if>
+         </trim>
+    </insert>
+
+    <update id="updateUserProposal" parameterType="UserProposal">
+        update user_proposal
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="spaceId != null">space_id = #{spaceId},</if>
+            <if test="proposalUser != null">proposal_user = #{proposalUser},</if>
+            <if test="title != null">title = #{title},</if>
+            <if test="describeValue != null">describe_value = #{describeValue},</if>
+            <if test="discuss != null">discuss = #{discuss},</if>
+            <if test="kind != null">kind = #{kind},</if>
+            <if test="tokenAmount != null">token_amount = #{tokenAmount},</if>
+            <if test="startTime != null">start_time = #{startTime},</if>
+            <if test="endTime != null">end_time = #{endTime},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="isOneLine != null">is_one_line = #{isOneLine},</if>
+            <if test="createDate != null">create_date = #{createDate},</if>
+            <if test="updateDate != null">update_date = #{updateDate},</if>
+            <if test="isDelete != null">is_delete = #{isDelete},</if>
+            <if test="remarks != null">remarks = #{remarks},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteUserProposalById" parameterType="Long">
+        delete from user_proposal where id = #{id}
+    </delete>
+
+    <delete id="deleteUserProposalByIds" parameterType="String">
+        delete from user_proposal where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+</mapper>

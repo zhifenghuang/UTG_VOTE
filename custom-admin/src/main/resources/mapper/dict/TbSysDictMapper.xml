@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.utg.mapper.TbSysDictMapper">
+    
+    <resultMap type="TbSysDict" id="TbSysDictResult">
+        <result property="id"    column="id"    />
+        <result property="key"    column="key"    />
+        <result property="value"    column="value"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <sql id="selectTbSysDictVo">
+        select id, A.key, A.value, remark from tb_sys_dict A
+    </sql>
+
+    <select id="selectTbSysDictList" parameterType="TbSysDict" resultMap="TbSysDictResult">
+        <include refid="selectTbSysDictVo"/>
+        <where>  
+            <if test="key != null  and key != ''"> and A.key = #{key}</if>
+            <if test="value != null  and value != ''"> and A.value = #{value}</if>
+        </where>
+    </select>
+    
+    <select id="selectTbSysDictById" parameterType="Long" resultMap="TbSysDictResult">
+        <include refid="selectTbSysDictVo"/>
+        where A.id = #{id}
+    </select>
+        
+    <insert id="insertTbSysDict" parameterType="TbSysDict" useGeneratedKeys="true" keyProperty="id">
+        insert into tb_sys_dict
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="key != null and key != ''">`key`,</if>
+            <if test="value != null and value != ''">`value`,</if>
+            <if test="remark != null">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="key != null and key != ''">#{key},</if>
+            <if test="value != null and value != ''">#{value},</if>
+            <if test="remark != null">#{remark},</if>
+         </trim>
+    </insert>
+
+    <update id="updateTbSysDict" parameterType="TbSysDict">
+        update tb_sys_dict
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="key != null and key != ''">`key` = #{key},</if>
+            <if test="value != null and value != ''">`value` = #{value},</if>
+            <if test="remark != null">`remark` = #{remark},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteTbSysDictById" parameterType="Long">
+        delete from tb_sys_dict where id = #{id}
+    </delete>
+
+    <delete id="deleteTbSysDictByIds" parameterType="String">
+        delete from tb_sys_dict where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+</mapper>

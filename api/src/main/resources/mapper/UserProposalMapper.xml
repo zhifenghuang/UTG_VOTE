@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hilamg.api.mapper.UserProposalMapper">
+
+    <!--获取用户投票列表-->
+    <select id="getUserProposalList" resultType="com.hilamg.api.dto.out.UserProposalList">
+        SELECT
+        A.`id`,
+        A.`space_id` spaceId,
+        A.`title`,
+        A.`kind`,
+        A.`vote_type` voteType,
+        A.`status`,
+        (
+        UNIX_TIMESTAMP(A.`end_time`) - UNIX_TIMESTAMP(NOW())
+        ) subDateTime,
+        A.`create_date` createDate,
+        B.`address` proposalUserAddress,
+        B.`nick_name` nikeName,
+        A.`describe_value` describeValue,
+        A.`discuss`,
+        C.`name` spaceName
+        FROM
+        user_proposal A
+        LEFT JOIN user_address B
+        ON A.`proposal_user` = B.`id`
+        LEFT JOIN user_space C
+        ON A.`space_id`=C.`id`
+        WHERE A.`is_delete` = 0
+        AND A.`is_one_line` = 2
+        AND A.`space_id` = #{spaceId}
+        <if test="status!=null and status!=''">
+            AND A.`status` = #{status}
+        </if>
+        ORDER BY A.`proposal_user` &lt;> #{userId},
+        A.`id` DESC,
+        A.`status` ASC
+    </select>
+
+    <!--获取空间时间线列表-->
+    <select id="getTimeLineList" resultType="com.hilamg.api.dto.out.UserProposalList">
+        SELECT
+        A.`id`,
+        A.`space_id` spaceId,
+        A.`title`,
+        A.`kind`,
+        A.`vote_type` voteType,
+        A.`status`,
+        (
+        UNIX_TIMESTAMP(A.`end_time`) - UNIX_TIMESTAMP(NOW())
+        ) subDateTime,
+        A.`create_date` createDate,
+        B.`address` proposalUserAddress,
+        B.`nick_name` nikeName,
+        A.`describe_value` describeValue,
+        A.`discuss`,
+        C.`name` spaceName
+        FROM
+        user_proposal A
+        LEFT JOIN user_address B
+        ON A.`proposal_user` = B.`id`
+        left join user_space C
+        on A.`space_id` = C.`id`
+        WHERE A.`is_delete` = 0
+        AND A.`is_one_line` = 2
+        <if test="status!=null and status!=''">
+            AND A.`status` = #{status}
+        </if>
+        and A.`space_id` in
+        (select
+        `space`
+        from
+        user_join_space
+        where
+        <if test='type=="1"' >
+            user_id = #{userId}
+        </if>
+        <if test='type=="2"' >
+            user_id != #{userId}
+        </if>
+              )
+        ORDER BY A.`proposal_user` &lt;> #{userId},
+        A.`id` DESC,
+        A.`status` ASC
+    </select>
+
+    <!--获取用户投票记录-->
+    <select id="getproposalUserLog" resultType="com.hilamg.api.dto.out.UserOptionsLogs">
+        select
+            A.`amount`,
+            A.`create_date` createDate,
+            B.`title`,
+            C.`options`,
+            A.`options_id` optionsId,
+            A.`proposal_id` proposalId,
+            D.`name`,
+            D.`id` spaceId,
+            D.`logo`
+        from
+            user_proposal_log A
+                left join user_proposal B
+                          on A.`proposal_id` = B.`id`
+                left join user_proposal_options C
+                          on A.`options_id` = C.`id`
+                left join user_space D
+                          on A.`space_id` = D.`id`
+        where A.`user_id` = #{userId}
+          and A.`is_delete`=0
+        order by A.`id` desc
+    </select>
+
+</mapper>

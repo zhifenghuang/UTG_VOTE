@@ -1,0 +1,40 @@
+spring:
+  datasource:
+    username: vote
+    password: Hay7PRrn5Yd2Kzzf
+    url: jdbc:mysql://148.72.245.237:3306/vote?useUnicode=true&characterEncoding=utf-8&useSSL=true&serverTimezone=Asia/Shanghai
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  redis:
+    host: 127.0.0.1
+    port: 6379
+    password:
+    jedis:
+      pool:
+        ## 连接池最大连接数（使用负值表示没有限制）
+        max-active: 8
+        ## 连接池最大阻塞等待时间（使用负值表示没有限制）
+        max-wait: -1
+        ## 连接池中的最大空闲连接
+        max-idle: 8
+        ## 连接池中的最小空闲连接
+        min-idle: 0
+    ## 连接超时时间（毫秒）
+    timeout: 5000
+    database: 2
+
+logging:
+  level:
+    com.baomidou.mybatisplus.samples: debug
+
+oneThinkerConfig:
+  ## 图片管理
+  picConfig:
+    ## 本地存储
+    localStorage:
+      ## 访问地址
+      host: http://image.votespace.io/
+      ## 默认图片上传路径
+      savePathConfig: project/onethinker-update-pic/
+      ## 上传默认目录
+      defaultPath: hh
